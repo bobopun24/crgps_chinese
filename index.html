@@ -1,0 +1,1557 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📚 告別小時候 — 詞語溫習小遊戲</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap');
+
+        :root {
+            --primary: #6C5CE7;
+            --secondary: #00B894;
+            --accent: #FDCB6E;
+            --danger: #E17055;
+            --info: #74B9FF;
+            --dark: #2D3436;
+            --light: #DFE6E9;
+            --bg: #F8F9FD;
+            --card: #FFFFFF;
+            --success-bg: #d4edda;
+            --error-bg: #f8d7da;
+            --gradient1: linear-gradient(135deg, #6C5CE7 0%, #A29BFE 100%);
+            --gradient2: linear-gradient(135deg, #00B894 0%, #55EFC4 100%);
+            --gradient3: linear-gradient(135deg, #FDCB6E 0%, #FFEAA7 100%);
+            --gradient4: linear-gradient(135deg, #E17055 0%, #FAB1A0 100%);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background: var(--bg);
+            color: var(--dark);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* ===== HEADER ===== */
+        .main-header {
+            background: var(--gradient1);
+            padding: 30px 20px 20px;
+            text-align: center;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+        .main-header::before {
+            content: '';
+            position: absolute;
+            top: -50%; left: -50%;
+            width: 200%; height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.08) 0%, transparent 60%);
+            animation: shimmer 8s ease-in-out infinite;
+        }
+        @keyframes shimmer {
+            0%, 100% { transform: translate(0,0); }
+            50% { transform: translate(30px,20px); }
+        }
+        .main-header h1 {
+            font-size: 2.2em; font-weight: 900;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+            position: relative; z-index: 1;
+        }
+        .main-header p {
+            font-size: 1.1em; margin-top: 6px;
+            opacity: 0.9; position: relative; z-index: 1;
+        }
+
+        /* ===== TOTAL SCORE DASHBOARD ===== */
+        .dashboard {
+            max-width: 1100px;
+            margin: -30px auto 0;
+            padding: 0 20px;
+            position: relative;
+            z-index: 2;
+        }
+        .dashboard-card {
+            background: var(--card);
+            border-radius: 20px;
+            padding: 25px 30px;
+            box-shadow: 0 8px 30px rgba(108,92,231,0.15);
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 25px;
+        }
+        .dash-total {
+            text-align: center;
+            min-width: 140px;
+        }
+        .dash-total .big-score {
+            font-size: 2.8em;
+            font-weight: 900;
+            background: var(--gradient1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1.1;
+        }
+        .dash-total .label {
+            font-size: 0.95em;
+            color: #636E72;
+            font-weight: 500;
+        }
+        .dash-divider {
+            width: 2px;
+            height: 60px;
+            background: var(--light);
+            border-radius: 2px;
+        }
+        .dash-games {
+            flex: 1;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            min-width: 0;
+        }
+        .dash-game-item {
+            text-align: center;
+            padding: 8px 4px;
+            border-radius: 12px;
+            background: #F8F9FD;
+        }
+        .dash-game-item .g-icon { font-size: 1.4em; }
+        .dash-game-item .g-name {
+            font-size: 0.75em;
+            color: #636E72;
+            margin: 3px 0;
+            white-space: nowrap;
+        }
+        .dash-game-item .g-score {
+            font-size: 1em;
+            font-weight: 700;
+        }
+        .dash-game-item .g-score.done { color: var(--secondary); }
+        .dash-game-item .g-score.pending { color: #B2BEC3; }
+        .dash-game-item .g-star { font-size: 0.85em; }
+
+        .dash-progress-section {
+            width: 100%;
+            margin-top: 5px;
+        }
+        .dash-progress-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9em;
+            color: #636E72;
+            margin-bottom: 6px;
+            font-weight: 500;
+        }
+        .dash-progress-outer {
+            width: 100%;
+            height: 12px;
+            background: var(--light);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .dash-progress-inner {
+            height: 100%;
+            background: var(--gradient1);
+            border-radius: 10px;
+            transition: width 0.6s ease;
+        }
+        .dash-badge {
+            display: inline-block;
+            padding: 4px 14px;
+            border-radius: 50px;
+            font-size: 0.85em;
+            font-weight: 700;
+            margin-top: 8px;
+        }
+        .dash-badge.gold { background: #FFF3CD; color: #856404; }
+        .dash-badge.silver { background: #E8F5E9; color: #2E7D32; }
+        .dash-badge.bronze { background: #FCE4EC; color: #C62828; }
+        .dash-badge.none { background: #ECEFF1; color: #78909C; }
+
+        /* ===== GAME SELECTION CARDS ===== */
+        .game-select {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+            padding: 25px 20px 40px;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+        .game-card {
+            background: var(--card);
+            border-radius: 20px;
+            padding: 28px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            position: relative;
+            overflow: hidden;
+        }
+        .game-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.15);
+        }
+        .game-card .icon { font-size: 3em; margin-bottom: 12px; display: block; }
+        .game-card h3 { font-size: 1.25em; font-weight: 700; margin-bottom: 6px; }
+        .game-card p { font-size: 0.88em; color: #636E72; line-height: 1.5; }
+        .game-card:nth-child(1) { border-top: 5px solid #6C5CE7; }
+        .game-card:nth-child(2) { border-top: 5px solid #00B894; }
+        .game-card:nth-child(3) { border-top: 5px solid #FDCB6E; }
+        .game-card:nth-child(4) { border-top: 5px solid #E17055; }
+        .game-card .best-score-tag {
+            position: absolute;
+            top: 12px; right: 12px;
+            background: #F0EDFF;
+            color: var(--primary);
+            font-size: 0.8em;
+            font-weight: 700;
+            padding: 4px 12px;
+            border-radius: 50px;
+        }
+
+        /* ===== GAME CONTAINER ===== */
+        .game-container {
+            display: none;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .game-container.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ===== BACK BUTTON ===== */
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--card);
+            border: 2px solid var(--light);
+            border-radius: 50px;
+            padding: 10px 24px;
+            font-size: 1em;
+            font-weight: 500;
+            color: var(--dark);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+            font-family: 'Noto Sans TC', sans-serif;
+        }
+        .back-btn:hover { background: var(--primary); color: white; border-color: var(--primary); }
+
+        /* ===== GAME TITLE ===== */
+        .game-title { text-align: center; margin-bottom: 25px; }
+        .game-title h2 { font-size: 1.8em; font-weight: 900; }
+        .game-title p { color: #636E72; margin-top: 5px; }
+
+        /* ===== SCORE BAR ===== */
+        .score-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--card);
+            border-radius: 15px;
+            padding: 15px 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+        }
+        .score-bar .score { font-size: 1.2em; font-weight: 700; color: var(--primary); }
+        .score-bar .progress-text { font-size: 0.95em; color: #636E72; }
+        .progress-bar-outer {
+            width: 100%; height: 8px;
+            background: var(--light);
+            border-radius: 10px;
+            margin-top: 10px;
+            overflow: hidden;
+        }
+        .progress-bar-inner {
+            height: 100%;
+            background: var(--gradient2);
+            border-radius: 10px;
+            transition: width 0.5s ease;
+        }
+
+        /* ===== GAME 1: 詞義配對 ===== */
+        .match-game-area {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+        .match-column-title {
+            text-align: center; font-weight: 700;
+            font-size: 1.1em; padding: 10px;
+            border-radius: 12px; margin-bottom: 5px;
+        }
+        .match-column-title.word-col { background: #EDE7F6; color: #6C5CE7; }
+        .match-column-title.def-col { background: #E8F5E9; color: #00B894; }
+        .match-item {
+            background: var(--card);
+            border: 3px solid var(--light);
+            border-radius: 14px;
+            padding: 14px;
+            text-align: center;
+            font-size: 1.05em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            user-select: none;
+            min-height: 56px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1.4;
+        }
+        .match-item:hover:not(.matched):not(.selected) {
+            border-color: var(--info); background: #F0F8FF;
+        }
+        .match-item.selected {
+            border-color: var(--primary); background: #EDE7F6;
+            transform: scale(1.03);
+            box-shadow: 0 4px 15px rgba(108,92,231,0.3);
+        }
+        .match-item.matched {
+            border-color: var(--secondary); background: #E8F8F5;
+            opacity: 0.7; cursor: default; transform: scale(0.97);
+        }
+        .match-item.wrong {
+            border-color: var(--danger); background: var(--error-bg);
+            animation: shake 0.5s ease;
+        }
+        @keyframes shake {
+            0%,100%{transform:translateX(0)}
+            20%{transform:translateX(-8px)}
+            40%{transform:translateX(8px)}
+            60%{transform:translateX(-5px)}
+            80%{transform:translateX(5px)}
+        }
+        .match-item.word-item { font-weight: 700; font-size: 1.25em; }
+
+        /* ===== GAME 2: 填充 ===== */
+        .fill-card {
+            background: var(--card);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            margin-bottom: 20px;
+        }
+        .fill-sentence {
+            font-size: 1.2em;
+            line-height: 2;
+            margin-bottom: 22px;
+            text-align: center;
+        }
+        .fill-blank {
+            display: inline-block;
+            border-bottom: 3px dashed var(--primary);
+            min-width: 110px;
+            padding: 2px 10px;
+            color: var(--primary);
+            font-weight: 700;
+            margin: 0 5px;
+        }
+        .fill-options {
+            display: flex; flex-wrap: wrap;
+            gap: 12px; justify-content: center;
+            margin-bottom: 20px;
+        }
+        .fill-option {
+            background: white;
+            border: 2.5px solid var(--light);
+            border-radius: 50px;
+            padding: 10px 26px;
+            font-size: 1.1em; font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Noto Sans TC', sans-serif;
+        }
+        .fill-option:hover:not(.used) {
+            border-color: var(--primary); background: #EDE7F6;
+            transform: translateY(-2px);
+        }
+        .fill-option.used { opacity: 0.4; cursor: default; text-decoration: line-through; }
+        .fill-option.selected-option { background: var(--primary); color: white; border-color: var(--primary); }
+        .fill-feedback {
+            text-align: center; padding: 15px;
+            border-radius: 12px; font-size: 1.05em;
+            font-weight: 600; margin-top: 15px;
+            display: none;
+        }
+        .fill-feedback.correct { display: block; background: var(--success-bg); color: #155724; }
+        .fill-feedback.wrong { display: block; background: var(--error-bg); color: #721C24; }
+        .fill-next-btn {
+            display: block; margin: 20px auto 0;
+            background: var(--gradient2); color: white;
+            border: none; border-radius: 50px;
+            padding: 14px 40px; font-size: 1.1em;
+            font-weight: 700; cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Noto Sans TC', sans-serif;
+        }
+        .fill-next-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0,184,148,0.4);
+        }
+
+        /* ===== GAME 3: 拆字拼詞 ===== */
+        .puzzle-card {
+            background: var(--card);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            text-align: center;
+        }
+        .puzzle-hint { font-size: 1.05em; color: #636E72; margin-bottom: 8px; }
+        .puzzle-definition {
+            font-size: 1.1em; color: var(--primary);
+            font-weight: 600; margin-bottom: 20px;
+            padding: 12px; background: #F0EDFF;
+            border-radius: 12px;
+        }
+        .puzzle-answer-area {
+            display: flex; gap: 12px; justify-content: center;
+            min-height: 70px; margin-bottom: 22px;
+            flex-wrap: wrap; align-items: center;
+        }
+        .puzzle-slot {
+            width: 62px; height: 62px;
+            border: 3px dashed var(--light);
+            border-radius: 14px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.5em; font-weight: 700;
+            background: #FAFAFA;
+            transition: all 0.3s ease;
+        }
+        .puzzle-slot.filled {
+            border-color: var(--primary);
+            background: #EDE7F6; color: var(--primary);
+            cursor: pointer;
+        }
+        .puzzle-slot.correct-slot {
+            border-color: var(--secondary);
+            background: #E8F8F5; color: var(--secondary);
+            animation: pop 0.4s ease;
+        }
+        @keyframes pop {
+            0%{transform:scale(1)} 50%{transform:scale(1.15)} 100%{transform:scale(1)}
+        }
+        .puzzle-chars {
+            display: flex; flex-wrap: wrap;
+            gap: 12px; justify-content: center;
+            margin-bottom: 18px;
+        }
+        .puzzle-char {
+            width: 58px; height: 58px;
+            background: white;
+            border: 3px solid var(--accent);
+            border-radius: 14px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.4em; font-weight: 700;
+            cursor: pointer; transition: all 0.3s ease;
+            color: var(--dark);
+        }
+        .puzzle-char:hover:not(.char-used) {
+            background: #FFF8E1; transform: translateY(-4px);
+            box-shadow: 0 6px 15px rgba(253,203,110,0.4);
+        }
+        .puzzle-char.char-used { opacity: 0.3; cursor: default; transform: scale(0.9); }
+        .puzzle-actions {
+            display: flex; gap: 12px; justify-content: center; margin-top: 15px;
+        }
+        .puzzle-btn {
+            border: none; border-radius: 50px;
+            padding: 12px 28px; font-size: 1em;
+            font-weight: 700; cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Noto Sans TC', sans-serif;
+        }
+        .puzzle-btn.clear { background: var(--light); color: var(--dark); }
+        .puzzle-btn.submit { background: var(--gradient1); color: white; }
+        .puzzle-btn:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,0,0,0.15); }
+
+        /* ===== GAME 4: 詞語大挑戰 ===== */
+        .challenge-card {
+            background: var(--card);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            text-align: center;
+        }
+        .challenge-timer {
+            font-size: 2.5em; font-weight: 900;
+            color: var(--danger); margin-bottom: 10px;
+        }
+        .challenge-timer.warning { animation: pulse 0.5s ease infinite; }
+        @keyframes pulse {
+            0%,100%{transform:scale(1)} 50%{transform:scale(1.1)}
+        }
+        .challenge-question-type {
+            display: inline-block; background: #F0EDFF;
+            color: var(--primary); padding: 6px 18px;
+            border-radius: 50px; font-size: 0.9em;
+            font-weight: 600; margin-bottom: 15px;
+        }
+        .challenge-question {
+            font-size: 1.25em; font-weight: 600;
+            margin-bottom: 22px; line-height: 1.8;
+        }
+        .challenge-options {
+            display: grid; grid-template-columns: 1fr 1fr;
+            gap: 12px; max-width: 600px;
+            margin: 0 auto 20px;
+        }
+        .challenge-option {
+            background: white;
+            border: 3px solid var(--light);
+            border-radius: 14px;
+            padding: 15px; font-size: 1.1em;
+            font-weight: 600; cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Noto Sans TC', sans-serif;
+        }
+        .challenge-option:hover:not(.chosen) {
+            border-color: var(--primary); background: #F0EDFF;
+            transform: translateY(-2px);
+        }
+        .challenge-option.correct-choice {
+            border-color: var(--secondary); background: var(--success-bg); color: #155724;
+        }
+        .challenge-option.wrong-choice {
+            border-color: var(--danger); background: var(--error-bg); color: #721C24;
+        }
+
+        /* ===== RESULT SCREEN ===== */
+        .result-screen { text-align: center; padding: 40px 20px; }
+        .result-screen .trophy {
+            font-size: 5em; margin-bottom: 15px;
+            animation: bounce 1s ease infinite;
+        }
+        @keyframes bounce {
+            0%,100%{transform:translateY(0)} 50%{transform:translateY(-15px)}
+        }
+        .result-screen h2 { font-size: 2em; font-weight: 900; margin-bottom: 10px; }
+        .result-screen .final-score {
+            font-size: 3em; font-weight: 900;
+            color: var(--primary); margin: 15px 0;
+        }
+        .result-screen .stars { font-size: 2.5em; margin: 10px 0 20px; }
+        .result-screen .message { font-size: 1.15em; color: #636E72; margin-bottom: 25px; }
+        .restart-btn {
+            display: inline-block;
+            background: var(--gradient1); color: white;
+            border: none; border-radius: 50px;
+            padding: 14px 36px; font-size: 1.05em;
+            font-weight: 700; cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Noto Sans TC', sans-serif;
+            margin: 5px;
+        }
+        .restart-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(108,92,231,0.4);
+        }
+        .restart-btn.home-btn { background: var(--light); color: var(--dark); }
+        .restart-btn.home-btn:hover { box-shadow: 0 8px 20px rgba(0,0,0,0.15); }
+
+        /* ===== CONFETTI ===== */
+        .confetti-piece {
+            position: fixed; width: 10px; height: 10px;
+            top: -20px; z-index: 9999;
+            border-radius: 2px; pointer-events: none;
+        }
+        @keyframes confettiFall {
+            0%{transform:translateY(0) rotate(0deg); opacity:1}
+            100%{transform:translateY(100vh) rotate(720deg); opacity:0}
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 700px) {
+            .main-header h1 { font-size: 1.5em; }
+            .game-select { grid-template-columns: 1fr 1fr; padding: 20px 15px; }
+            .match-game-area { grid-template-columns: 1fr; }
+            .challenge-options { grid-template-columns: 1fr; }
+            .fill-card, .puzzle-card, .challenge-card { padding: 20px; }
+            .puzzle-slot, .puzzle-char { width: 48px; height: 48px; font-size: 1.2em; }
+            .dashboard-card { padding: 18px; gap: 15px; }
+            .dash-total .big-score { font-size: 2em; }
+            .dash-divider { display: none; }
+            .dash-games { grid-template-columns: repeat(4, 1fr); gap: 6px; }
+            .dash-game-item .g-name { font-size: 0.65em; }
+        }
+        @media (max-width: 500px) {
+            .game-select { grid-template-columns: 1fr; }
+        }
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+<!-- ===== MAIN HEADER ===== -->
+<header class="main-header">
+    <h1>📚 告別小時候 — 詞語溫習遊戲</h1>
+    <p>單元七 ｜ 小六中文 ｜ 13個重點詞語</p>
+</header>
+
+<!-- ===== DASHBOARD ===== -->
+<div class="dashboard">
+    <div class="dashboard-card">
+        <div class="dash-total">
+            <div class="big-score" id="dashTotalScore">0</div>
+            <div class="label">總分</div>
+        </div>
+        <div class="dash-divider"></div>
+        <div class="dash-games">
+            <div class="dash-game-item">
+                <div class="g-icon">🔗</div>
+                <div class="g-name">詞義配對</div>
+                <div class="g-score pending" id="dashScore1">未挑戰</div>
+                <div class="g-star" id="dashStar1"></div>
+            </div>
+            <div class="dash-game-item">
+                <div class="g-icon">✏️</div>
+                <div class="g-name">句子填充</div>
+                <div class="g-score pending" id="dashScore2">未挑戰</div>
+                <div class="g-star" id="dashStar2"></div>
+            </div>
+            <div class="dash-game-item">
+                <div class="g-icon">🧩</div>
+                <div class="g-name">拆字拼詞</div>
+                <div class="g-score pending" id="dashScore3">未挑戰</div>
+                <div class="g-star" id="dashStar3"></div>
+            </div>
+            <div class="dash-game-item">
+                <div class="g-icon">⚡</div>
+                <div class="g-name">詞語大挑戰</div>
+                <div class="g-score pending" id="dashScore4">未挑戰</div>
+                <div class="g-star" id="dashStar4"></div>
+            </div>
+        </div>
+        <div class="dash-progress-section">
+            <div class="dash-progress-label">
+                <span>🏆 挑戰進度</span>
+                <span id="dashProgressText">0 / 4 完成</span>
+            </div>
+            <div class="dash-progress-outer">
+                <div class="dash-progress-inner" id="dashProgressBar" style="width:0%"></div>
+            </div>
+            <div style="text-align:center;">
+                <span class="dash-badge none" id="dashBadge">尚未開始挑戰</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ===== GAME SELECTION ===== -->
+<div id="menuScreen" class="game-select">
+    <div class="game-card" onclick="startGame(1)">
+        <span class="best-score-tag" id="cardBest1">最佳：--</span>
+        <span class="icon">🔗</span>
+        <h3>詞義配對</h3>
+        <p>把詞語和正確的解釋配對連線，看看你記得多少！</p>
+    </div>
+    <div class="game-card" onclick="startGame(2)">
+        <span class="best-score-tag" id="cardBest2">最佳：--</span>
+        <span class="icon">✏️</span>
+        <h3>句子填充</h3>
+        <p>閱讀句子，選出最適合的詞語填入空格中！</p>
+    </div>
+    <div class="game-card" onclick="startGame(3)">
+        <span class="best-score-tag" id="cardBest3">最佳：--</span>
+        <span class="icon">🧩</span>
+        <h3>拆字拼詞</h3>
+        <p>根據提示，從打亂的字中拼出正確的詞語！</p>
+    </div>
+    <div class="game-card" onclick="startGame(4)">
+        <span class="best-score-tag" id="cardBest4">最佳：--</span>
+        <span class="icon">⚡</span>
+        <h3>詞語大挑戰</h3>
+        <p>限時挑戰！快速回答各種詞語問題，考考你的反應！</p>
+    </div>
+</div>
+
+<!-- ===== GAME 1 ===== -->
+<div id="game1" class="game-container">
+    <button class="back-btn" onclick="goHome()">⬅ 返回選單</button>
+    <div class="game-title"><h2>🔗 詞義配對</h2><p>點選左邊的詞語，再點選右邊正確的解釋</p></div>
+    <div class="score-bar">
+        <span class="score" id="match-score">✅ 0 / 13</span>
+        <span class="progress-text" id="match-round">第 1 回合（共 3 回合）</span>
+    </div>
+    <div class="progress-bar-outer"><div class="progress-bar-inner" id="match-progress" style="width:0%"></div></div>
+    <br><div id="match-area" class="match-game-area"></div>
+</div>
+
+<!-- ===== GAME 2 ===== -->
+<div id="game2" class="game-container">
+    <button class="back-btn" onclick="goHome()">⬅ 返回選單</button>
+    <div class="game-title"><h2>✏️ 句子填充</h2><p>選出最合適的詞語填入句子中</p></div>
+    <div class="score-bar">
+        <span class="score" id="fill-score">✅ 0 / 13</span>
+        <span class="progress-text" id="fill-progress-text">第 1 題，共 13 題</span>
+    </div>
+    <div class="progress-bar-outer"><div class="progress-bar-inner" id="fill-progress" style="width:0%"></div></div>
+    <br><div id="fill-area"></div>
+</div>
+
+<!-- ===== GAME 3 ===== -->
+<div id="game3" class="game-container">
+    <button class="back-btn" onclick="goHome()">⬅ 返回選單</button>
+    <div class="game-title"><h2>🧩 拆字拼詞</h2><p>根據提示，把打亂的字拼成正確的詞語</p></div>
+    <div class="score-bar">
+        <span class="score" id="puzzle-score">✅ 0 / 13</span>
+        <span class="progress-text" id="puzzle-progress-text">第 1 題，共 13 題</span>
+    </div>
+    <div class="progress-bar-outer"><div class="progress-bar-inner" id="puzzle-progress" style="width:0%"></div></div>
+    <br><div id="puzzle-area"></div>
+</div>
+
+<!-- ===== GAME 4 ===== -->
+<div id="game4" class="game-container">
+    <button class="back-btn" onclick="goHome()">⬅ 返回選單</button>
+    <div class="game-title"><h2>⚡ 詞語大挑戰</h2><p>限時作答，看看你能拿多少分！</p></div>
+    <div class="score-bar">
+        <span class="score" id="challenge-score">✅ 0 分</span>
+        <span class="progress-text" id="challenge-progress-text">第 1 題，共 15 題</span>
+    </div>
+    <div class="progress-bar-outer"><div class="progress-bar-inner" id="challenge-progress" style="width:0%"></div></div>
+    <br><div id="challenge-area"></div>
+</div>
+
+<script>
+// =====================================================
+// DATA — 13 Vocabulary Words
+// =====================================================
+const vocabData = [
+    {
+        word: "滿載",
+        definition: "裝滿了東西",
+        emoji: "📦",
+        // 原創例句（非課文）
+        fillSentence: "旅行結束後，我們___而歸，行李箱塞滿了各地的紀念品。",
+        challengeSentences: [
+            "這艘貨船已經___了貨物，準備啟航前往新加坡。",
+            "營火晚會結束後，大家___着美好的回憶回家去。"
+        ]
+    },
+    {
+        word: "畢業",
+        definition: "在學校學習期滿，結束學習",
+        emoji: "🎓",
+        fillSentence: "姐姐大學___後，打算到外國深造。",
+        challengeSentences: [
+            "時間過得真快，我們就快要小學___了。",
+            "叔叔從醫學院___後，便在公立醫院當醫生。"
+        ]
+    },
+    {
+        word: "衷心",
+        definition: "發自內心的",
+        emoji: "❤️",
+        fillSentence: "我___祝願爺爺身體健康，生活愉快。",
+        challengeSentences: [
+            "運動會結束了，校長___感謝義工們的協助。",
+            "聽到好朋友考上了心儀的中學，我___為他高興。"
+        ]
+    },
+    {
+        word: "傳授",
+        definition: "把學問、技藝等教給別人",
+        emoji: "📖",
+        fillSentence: "太極拳師傅把武術功夫___給一群年輕弟子。",
+        challengeSentences: [
+            "外婆把製作糕點的祕方___給媽媽，希望她能傳承下去。",
+            "教練___了許多游泳技巧，讓我們的水平大為提高。"
+        ]
+    },
+    {
+        word: "拼搏",
+        definition: "使盡全力去搏鬥或爭取",
+        emoji: "💪",
+        fillSentence: "為了在比賽中取得好成績，運動員們不斷___、刻苦訓練。",
+        challengeSentences: [
+            "弟弟在學業上奮力___，最終考上了理想的中學。",
+            "消防員們在火場中奮力___，終於成功撲滅大火。"
+        ]
+    },
+    {
+        word: "傷感",
+        definition: "因感觸而悲傷",
+        emoji: "😢",
+        fillSentence: "送別老朋友出國定居，大家都感到十分___。",
+        challengeSentences: [
+            "看着樹葉紛紛飄落，他___地想起了從前和爺爺在園子裏的日子。",
+            "聽到那首舊歌，她不禁___起來，回想起童年的往事。"
+        ]
+    },
+    {
+        word: "歷歷在目",
+        definition: "清清楚楚地出現在眼前",
+        emoji: "👀",
+        fillSentence: "去年學校旅行時發生的趣事，至今仍然___。",
+        challengeSentences: [
+            "雖然那件事已經過了很多年，但當時的情景仍___。",
+            "翻開舊相簿，兒時的快樂時光___。"
+        ]
+    },
+    {
+        word: "徬徨",
+        definition: "猶疑不決，不知往哪個方向走去",
+        emoji: "😟",
+        fillSentence: "面對升中選校的抉擇，他感到非常___，不知該如何選擇。",
+        challengeSentences: [
+            "初到外國生活，人生路不熟，她___不安。",
+            "遇到這麼大的困難，他一時感到很___，不知所措。"
+        ]
+    },
+    {
+        word: "短暫",
+        definition: "時間短",
+        emoji: "⏳",
+        fillSentence: "快樂的假期總是特別___，一眨眼就結束了。",
+        challengeSentences: [
+            "今次旅行雖然___，但我們玩得非常盡興。",
+            "午後一場___的陣雨過後，天空出現了美麗的彩虹。"
+        ]
+    },
+    {
+        word: "諾言",
+        definition: "答應、允諾別人的話",
+        emoji: "🤝",
+        fillSentence: "他答應了媽媽每天溫習的___，絕不會食言。",
+        challengeSentences: [
+            "做人要信守___，答應別人的事就一定要做到。",
+            "她許下了努力讀書的___，希望能考進心儀的中學。"
+        ]
+    },
+    {
+        word: "遮風擋雨",
+        definition: "遮擋風雨，比喻起保護作用",
+        emoji: "🌳",
+        fillSentence: "感謝爸爸媽媽多年來為我們___，讓我們無憂無慮地成長。",
+        challengeSentences: [
+            "村口那棵大榕樹替村民___，是乘涼的好地方。",
+            "不管遇到什麼困難，家人總會為你___。"
+        ]
+    },
+    {
+        word: "蓬勃",
+        definition: "繁榮、旺盛",
+        emoji: "🌱",
+        fillSentence: "在春天的陽光下，花園裏的植物___地生長。",
+        challengeSentences: [
+            "近年來這個小鎮旅遊業___發展，吸引了很多遊客。",
+            "校內的課外活動___開展，同學們都積極參加。"
+        ]
+    },
+    {
+        word: "留戀",
+        definition: "不忍捨棄或離開",
+        emoji: "🥺",
+        fillSentence: "旅程結束了，大家都很___這裏的美景，捨不得離開。",
+        challengeSentences: [
+            "他十分___校園的一草一木，每一處都承載着美好的回憶。",
+            "小狗被送去新家時，不斷回頭張望，似乎很___舊主人。"
+        ]
+    }
+];
+
+// =====================================================
+// GLOBAL STATE — Dashboard
+// =====================================================
+let bestScores = { 1: null, 2: null, 3: null, 4: null };
+let gamesCompleted = new Set();
+const gameTotals = { 1: 13, 2: 13, 3: 13, 4: 75 }; // game4 max=15*5
+
+function updateDashboard() {
+    let total = 0;
+    let completed = 0;
+    for (let g = 1; g <= 4; g++) {
+        const el = document.getElementById('dashScore' + g);
+        const starEl = document.getElementById('dashStar' + g);
+        const cardEl = document.getElementById('cardBest' + g);
+        if (bestScores[g] !== null) {
+            completed++;
+            let pct;
+            if (g === 4) {
+                pct = Math.round((bestScores[g] / gameTotals[g]) * 100);
+                el.textContent = bestScores[g] + ' 分';
+                cardEl.textContent = '最佳：' + bestScores[g] + ' 分';
+            } else {
+                pct = Math.round((bestScores[g] / gameTotals[g]) * 100);
+                el.textContent = bestScores[g] + ' / ' + gameTotals[g];
+                cardEl.textContent = '最佳：' + bestScores[g] + '/' + gameTotals[g];
+            }
+            el.classList.remove('pending');
+            el.classList.add('done');
+            total += bestScores[g];
+            // Stars
+            if (pct >= 90) starEl.textContent = '⭐⭐⭐';
+            else if (pct >= 70) starEl.textContent = '⭐⭐';
+            else if (pct >= 50) starEl.textContent = '⭐';
+            else starEl.textContent = '💫';
+        } else {
+            el.textContent = '未挑戰';
+            el.classList.remove('done');
+            el.classList.add('pending');
+            starEl.textContent = '';
+            cardEl.textContent = '最佳：--';
+        }
+    }
+    document.getElementById('dashTotalScore').textContent = total;
+    document.getElementById('dashProgressText').textContent = completed + ' / 4 完成';
+    document.getElementById('dashProgressBar').style.width = (completed / 4 * 100) + '%';
+
+    const badge = document.getElementById('dashBadge');
+    if (completed === 4) {
+        let allPct = 0;
+        for (let g = 1; g <= 4; g++) allPct += (bestScores[g] / gameTotals[g]);
+        allPct = allPct / 4 * 100;
+        if (allPct >= 85) { badge.textContent = '🏆 詞語大師！全部完成！'; badge.className = 'dash-badge gold'; }
+        else if (allPct >= 60) { badge.textContent = '🥈 做得很好！繼續加油！'; badge.className = 'dash-badge silver'; }
+        else { badge.textContent = '💪 全部完成！多練習會更好！'; badge.className = 'dash-badge bronze'; }
+    } else if (completed > 0) {
+        badge.textContent = '🔥 已完成 ' + completed + ' 款遊戲，繼續挑戰吧！';
+        badge.className = 'dash-badge silver';
+    } else {
+        badge.textContent = '尚未開始挑戰，快來試試吧！';
+        badge.className = 'dash-badge none';
+    }
+}
+
+function recordScore(gameNum, score) {
+    if (bestScores[gameNum] === null || score > bestScores[gameNum]) {
+        bestScores[gameNum] = score;
+    }
+    gamesCompleted.add(gameNum);
+    updateDashboard();
+}
+
+// =====================================================
+// UTILITY
+// =====================================================
+function shuffle(arr) {
+    const a = [...arr];
+    for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+}
+
+function goHome() {
+    document.querySelectorAll('.game-container').forEach(g => g.classList.remove('active'));
+    document.getElementById('menuScreen').classList.remove('hidden');
+    document.querySelector('.dashboard').classList.remove('hidden');
+    document.querySelector('.main-header').classList.remove('hidden');
+    updateDashboard();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function startGame(n) {
+    document.getElementById('menuScreen').classList.add('hidden');
+    document.querySelector('.dashboard').classList.add('hidden');
+    document.querySelectorAll('.game-container').forEach(g => g.classList.remove('active'));
+    document.getElementById('game' + n).classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (n === 1) initMatchGame();
+    if (n === 2) initFillGame();
+    if (n === 3) initPuzzleGame();
+    if (n === 4) initChallengeGame();
+}
+
+// =====================================================
+// GAME 1: 詞義配對
+// =====================================================
+let matchState = {};
+let matchAllItems = [];
+
+function initMatchGame() {
+    matchAllItems = shuffle([...vocabData]);
+    matchState = { score: 0, round: 1, totalRounds: 3, selectedWord: null, selectedDef: null, matchedPairs: new Set(), roundItems: [] };
+    loadMatchRound();
+}
+
+function loadMatchRound() {
+    const area = document.getElementById('match-area');
+    area.innerHTML = '';
+    matchState.matchedPairs.clear();
+    matchState.selectedWord = null;
+    matchState.selectedDef = null;
+
+    const sizes = [5, 4, 4];
+    let offset = 0;
+    for (let r = 0; r < matchState.round - 1; r++) offset += sizes[r];
+    matchState.roundItems = matchAllItems.slice(offset, offset + sizes[matchState.round - 1]);
+
+    const wordsShuffled = shuffle(matchState.roundItems);
+    const defsShuffled = shuffle(matchState.roundItems);
+
+    const leftTitle = document.createElement('div');
+    leftTitle.className = 'match-column-title word-col';
+    leftTitle.textContent = '📝 詞語';
+    area.appendChild(leftTitle);
+    const rightTitle = document.createElement('div');
+    rightTitle.className = 'match-column-title def-col';
+    rightTitle.textContent = '📖 解釋';
+    area.appendChild(rightTitle);
+
+    wordsShuffled.forEach((item, i) => {
+        const div = document.createElement('div');
+        div.className = 'match-item word-item';
+        div.textContent = item.word;
+        div.dataset.word = item.word;
+        div.dataset.type = 'word';
+        div.onclick = () => selectMatchItem(div);
+        area.appendChild(div);
+
+        const defDiv = document.createElement('div');
+        defDiv.className = 'match-item';
+        defDiv.textContent = defsShuffled[i].definition;
+        defDiv.dataset.word = defsShuffled[i].word;
+        defDiv.dataset.type = 'def';
+        defDiv.onclick = () => selectMatchItem(defDiv);
+        area.appendChild(defDiv);
+    });
+    updateMatchUI();
+}
+
+function selectMatchItem(div) {
+    if (div.classList.contains('matched')) return;
+    const type = div.dataset.type;
+    if (type === 'word') {
+        document.querySelectorAll('.match-item.word-item.selected').forEach(el => el.classList.remove('selected'));
+        div.classList.add('selected');
+        matchState.selectedWord = div;
+    } else {
+        document.querySelectorAll('.match-item:not(.word-item).selected').forEach(el => el.classList.remove('selected'));
+        div.classList.add('selected');
+        matchState.selectedDef = div;
+    }
+    if (matchState.selectedWord && matchState.selectedDef) checkMatchPair();
+}
+
+function checkMatchPair() {
+    const wDiv = matchState.selectedWord;
+    const dDiv = matchState.selectedDef;
+    if (wDiv.dataset.word === dDiv.dataset.word) {
+        wDiv.classList.remove('selected'); dDiv.classList.remove('selected');
+        wDiv.classList.add('matched'); dDiv.classList.add('matched');
+        matchState.score++;
+        matchState.matchedPairs.add(wDiv.dataset.word);
+        updateMatchUI();
+        if (matchState.matchedPairs.size === matchState.roundItems.length) {
+            if (matchState.round < matchState.totalRounds) {
+                setTimeout(() => { matchState.round++; loadMatchRound(); }, 800);
+            } else {
+                setTimeout(() => showResult(1, matchState.score, 13), 600);
+            }
+        }
+    } else {
+        wDiv.classList.add('wrong'); dDiv.classList.add('wrong');
+        setTimeout(() => {
+            wDiv.classList.remove('wrong', 'selected');
+            dDiv.classList.remove('wrong', 'selected');
+        }, 700);
+    }
+    matchState.selectedWord = null;
+    matchState.selectedDef = null;
+}
+
+function updateMatchUI() {
+    document.getElementById('match-score').textContent = '✅ ' + matchState.score + ' / 13';
+    document.getElementById('match-round').textContent = '第 ' + matchState.round + ' 回合（共 ' + matchState.totalRounds + ' 回合）';
+    document.getElementById('match-progress').style.width = Math.round((matchState.score / 13) * 100) + '%';
+}
+
+// =====================================================
+// GAME 2: 句子填充（全新原創句子）
+// =====================================================
+let fillState = {};
+
+function initFillGame() {
+    fillState = { questions: shuffle([...vocabData]), current: 0, score: 0 };
+    loadFillQuestion();
+}
+
+function loadFillQuestion() {
+    const area = document.getElementById('fill-area');
+    area.innerHTML = '';
+    if (fillState.current >= fillState.questions.length) {
+        showResult(2, fillState.score, 13);
+        return;
+    }
+    const q = fillState.questions[fillState.current];
+    const wrongOptions = shuffle(vocabData.filter(v => v.word !== q.word)).slice(0, 3);
+    const options = shuffle([q, ...wrongOptions]);
+
+    const card = document.createElement('div');
+    card.className = 'fill-card';
+
+    const qNum = document.createElement('div');
+    qNum.style.cssText = 'text-align:center; margin-bottom:15px;';
+    qNum.innerHTML = '<span style="background:#F0EDFF; color:#6C5CE7; padding:6px 18px; border-radius:50px; font-weight:600;">' + q.emoji + ' 第 ' + (fillState.current + 1) + ' 題</span>';
+    card.appendChild(qNum);
+
+    const sentence = document.createElement('div');
+    sentence.className = 'fill-sentence';
+    const parts = q.fillSentence.split('___');
+    sentence.innerHTML = parts[0] + '<span class="fill-blank" id="fill-blank-display">？</span>' + (parts[1] || '');
+    card.appendChild(sentence);
+
+    const optionsDiv = document.createElement('div');
+    optionsDiv.className = 'fill-options';
+    options.forEach(opt => {
+        const btn = document.createElement('button');
+        btn.className = 'fill-option';
+        btn.textContent = opt.word;
+        btn.onclick = () => checkFillAnswer(btn, opt.word, q.word, card);
+        optionsDiv.appendChild(btn);
+    });
+    card.appendChild(optionsDiv);
+    area.appendChild(card);
+    updateFillUI();
+}
+
+function checkFillAnswer(btn, chosen, correct, card) {
+    const allBtns = card.querySelectorAll('.fill-option');
+    allBtns.forEach(b => { b.onclick = null; b.style.pointerEvents = 'none'; });
+    const blank = document.getElementById('fill-blank-display');
+    const correctData = vocabData.find(v => v.word === correct);
+
+    if (chosen === correct) {
+        btn.classList.add('selected-option');
+        blank.textContent = correct;
+        blank.style.color = '#00B894'; blank.style.borderColor = '#00B894';
+        fillState.score++;
+        const fb = document.createElement('div');
+        fb.className = 'fill-feedback correct';
+        fb.innerHTML = '✅ 正確！「' + correct + '」— ' + correctData.definition;
+        card.appendChild(fb);
+    } else {
+        btn.classList.add('selected-option');
+        btn.style.background = '#E17055'; btn.style.color = 'white'; btn.style.borderColor = '#E17055';
+        blank.textContent = correct; blank.style.color = '#E17055';
+        allBtns.forEach(b => { if (b.textContent === correct) { b.style.background = '#00B894'; b.style.color = 'white'; b.style.borderColor = '#00B894'; } });
+        const fb = document.createElement('div');
+        fb.className = 'fill-feedback wrong';
+        fb.innerHTML = '❌ 正確答案是「' + correct + '」— ' + correctData.definition;
+        card.appendChild(fb);
+    }
+    const nextBtn = document.createElement('button');
+    nextBtn.className = 'fill-next-btn';
+    nextBtn.textContent = fillState.current < 12 ? '下一題 ➡️' : '查看結果 🏆';
+    nextBtn.onclick = () => { fillState.current++; loadFillQuestion(); };
+    card.appendChild(nextBtn);
+    updateFillUI();
+}
+
+function updateFillUI() {
+    document.getElementById('fill-score').textContent = '✅ ' + fillState.score + ' / 13';
+    document.getElementById('fill-progress-text').textContent = '第 ' + Math.min(fillState.current + 1, 13) + ' 題，共 13 題';
+    document.getElementById('fill-progress').style.width = Math.round((fillState.current / 13) * 100) + '%';
+}
+
+// =====================================================
+// GAME 3: 拆字拼詞
+// =====================================================
+let puzzleState = {};
+
+function initPuzzleGame() {
+    puzzleState = { questions: shuffle([...vocabData]), current: 0, score: 0, currentAnswer: [], maxSlots: 0 };
+    loadPuzzleQuestion();
+}
+
+function loadPuzzleQuestion() {
+    const area = document.getElementById('puzzle-area');
+    area.innerHTML = '';
+    if (puzzleState.current >= puzzleState.questions.length) {
+        showResult(3, puzzleState.score, 13);
+        return;
+    }
+    const q = puzzleState.questions[puzzleState.current];
+    const chars = q.word.split('');
+    puzzleState.maxSlots = chars.length;
+    puzzleState.currentAnswer = [];
+
+    const allChars = vocabData.flatMap(v => v.word.split(''));
+    const distractors = shuffle(allChars.filter(c => !chars.includes(c))).slice(0, Math.max(2, 4 - chars.length));
+    const mixedChars = shuffle([...chars, ...distractors]);
+
+    const card = document.createElement('div');
+    card.className = 'puzzle-card';
+
+    const qNum = document.createElement('div');
+    qNum.innerHTML = '<span style="font-size:2em;">' + q.emoji + '</span><br><span style="background:#FFF3CD; color:#856404; padding:5px 15px; border-radius:50px; font-size:0.9em; font-weight:600;">第 ' + (puzzleState.current + 1) + ' / 13 題</span>';
+    card.appendChild(qNum);
+
+    const hint = document.createElement('div');
+    hint.className = 'puzzle-hint';
+    hint.style.marginTop = '15px';
+    hint.textContent = '提示：這個詞語有 ' + chars.length + ' 個字';
+    card.appendChild(hint);
+
+    const defDiv = document.createElement('div');
+    defDiv.className = 'puzzle-definition';
+    defDiv.textContent = '📖 ' + q.definition;
+    card.appendChild(defDiv);
+
+    // Use a new hint sentence (not from textbook) with word blanked
+    const hintSentence = q.fillSentence.replace('___', '＿'.repeat(chars.length));
+    const exDiv = document.createElement('div');
+    exDiv.style.cssText = 'font-size:0.95em; color:#636E72; margin-bottom:18px; line-height:1.6;';
+    exDiv.innerHTML = '💡 例句：' + hintSentence;
+    card.appendChild(exDiv);
+
+    const slotsDiv = document.createElement('div');
+    slotsDiv.className = 'puzzle-answer-area';
+    slotsDiv.id = 'puzzle-slots';
+    for (let i = 0; i < chars.length; i++) {
+        const slot = document.createElement('div');
+        slot.className = 'puzzle-slot';
+        slot.dataset.index = i;
+        slot.onclick = () => removeFromSlot(i);
+        slotsDiv.appendChild(slot);
+    }
+    card.appendChild(slotsDiv);
+
+    const charsDiv = document.createElement('div');
+    charsDiv.className = 'puzzle-chars';
+    charsDiv.id = 'puzzle-chars';
+    mixedChars.forEach((c, i) => {
+        const btn = document.createElement('div');
+        btn.className = 'puzzle-char';
+        btn.textContent = c;
+        btn.dataset.charIndex = i;
+        btn.onclick = () => addToSlot(c, i);
+        charsDiv.appendChild(btn);
+    });
+    card.appendChild(charsDiv);
+
+    const actions = document.createElement('div');
+    actions.className = 'puzzle-actions';
+    const clearBtn = document.createElement('button');
+    clearBtn.className = 'puzzle-btn clear';
+    clearBtn.textContent = '🔄 清除';
+    clearBtn.onclick = () => clearPuzzle();
+    actions.appendChild(clearBtn);
+    const submitBtn = document.createElement('button');
+    submitBtn.className = 'puzzle-btn submit';
+    submitBtn.textContent = '✅ 確認';
+    submitBtn.id = 'puzzle-submit';
+    submitBtn.onclick = () => checkPuzzle(q);
+    actions.appendChild(submitBtn);
+    card.appendChild(actions);
+
+    const fb = document.createElement('div');
+    fb.id = 'puzzle-feedback';
+    fb.style.marginTop = '15px';
+    card.appendChild(fb);
+
+    area.appendChild(card);
+    updatePuzzleUI();
+}
+
+function addToSlot(char, charIndex) {
+    const charBtn = document.querySelector('.puzzle-char[data-char-index="' + charIndex + '"]');
+    if (charBtn.classList.contains('char-used')) return;
+    if (puzzleState.currentAnswer.length >= puzzleState.maxSlots) return;
+    puzzleState.currentAnswer.push({ char, charIndex });
+    charBtn.classList.add('char-used');
+    const slotIndex = puzzleState.currentAnswer.length - 1;
+    const slot = document.querySelectorAll('#puzzle-slots .puzzle-slot')[slotIndex];
+    slot.textContent = char;
+    slot.classList.add('filled');
+    slot.dataset.charIndex = charIndex;
+}
+
+function removeFromSlot(slotIndex) {
+    if (slotIndex >= puzzleState.currentAnswer.length) return;
+    const removed = puzzleState.currentAnswer.splice(slotIndex, 1)[0];
+    const charBtn = document.querySelector('.puzzle-char[data-char-index="' + removed.charIndex + '"]');
+    charBtn.classList.remove('char-used');
+    const slots = document.querySelectorAll('#puzzle-slots .puzzle-slot');
+    slots.forEach((s, i) => {
+        if (i < puzzleState.currentAnswer.length) {
+            s.textContent = puzzleState.currentAnswer[i].char;
+            s.classList.add('filled');
+            s.dataset.charIndex = puzzleState.currentAnswer[i].charIndex;
+        } else {
+            s.textContent = '';
+            s.classList.remove('filled');
+            delete s.dataset.charIndex;
+        }
+    });
+}
+
+function clearPuzzle() {
+    puzzleState.currentAnswer.forEach(item => {
+        const charBtn = document.querySelector('.puzzle-char[data-char-index="' + item.charIndex + '"]');
+        charBtn.classList.remove('char-used');
+    });
+    puzzleState.currentAnswer = [];
+    document.querySelectorAll('#puzzle-slots .puzzle-slot').forEach(s => {
+        s.textContent = ''; s.classList.remove('filled', 'correct-slot');
+    });
+}
+
+function checkPuzzle(q) {
+    if (puzzleState.currentAnswer.length < puzzleState.maxSlots) {
+        document.getElementById('puzzle-feedback').innerHTML = '<div style="color:#E17055; font-weight:600;">⚠️ 請先填滿所有空格！</div>';
+        return;
+    }
+    const answer = puzzleState.currentAnswer.map(a => a.char).join('');
+    const fb = document.getElementById('puzzle-feedback');
+    document.getElementById('puzzle-submit').onclick = null;
+    document.querySelectorAll('.puzzle-char').forEach(c => c.onclick = null);
+    document.querySelectorAll('.puzzle-slot').forEach(s => s.onclick = null);
+
+    if (answer === q.word) {
+        puzzleState.score++;
+        document.querySelectorAll('#puzzle-slots .puzzle-slot').forEach(s => s.classList.add('correct-slot'));
+        fb.innerHTML = '<div class="fill-feedback correct">✅ 正確！「' + q.word + '」— ' + q.definition + '</div>';
+    } else {
+        fb.innerHTML = '<div class="fill-feedback wrong">❌ 答案是「' + q.word + '」— ' + q.definition + '</div>';
+    }
+    const nextBtn = document.createElement('button');
+    nextBtn.className = 'fill-next-btn';
+    nextBtn.textContent = puzzleState.current < 12 ? '下一題 ➡️' : '查看結果 🏆';
+    nextBtn.onclick = () => { puzzleState.current++; loadPuzzleQuestion(); };
+    fb.appendChild(nextBtn);
+    updatePuzzleUI();
+}
+
+function updatePuzzleUI() {
+    document.getElementById('puzzle-score').textContent = '✅ ' + puzzleState.score + ' / 13';
+    document.getElementById('puzzle-progress-text').textContent = '第 ' + Math.min(puzzleState.current + 1, 13) + ' 題，共 13 題';
+    document.getElementById('puzzle-progress').style.width = Math.round((puzzleState.current / 13) * 100) + '%';
+}
+
+// =====================================================
+// GAME 4: 詞語大挑戰（全新原創句子）
+// =====================================================
+let challengeState = {};
+
+function initChallengeGame() {
+    challengeState = { questions: generateChallengeQuestions(), current: 0, score: 0, timer: null, timeLeft: 15 };
+    loadChallengeQuestion();
+}
+
+function generateChallengeQuestions() {
+    const questions = [];
+
+    // Type 1: 詞義題 (5 questions)
+    shuffle([...vocabData]).slice(0, 5).forEach(v => {
+        const wrongDefs = shuffle(vocabData.filter(x => x.word !== v.word)).slice(0, 3).map(x => x.definition);
+        questions.push({
+            type: '詞義題', emoji: v.emoji,
+            question: '「' + v.word + '」是甚麼意思？',
+            options: shuffle([v.definition, ...wrongDefs]),
+            answer: v.definition
+        });
+    });
+
+    // Type 2: 反向配對 (5 questions)
+    shuffle([...vocabData]).slice(0, 5).forEach(v => {
+        const wrongWords = shuffle(vocabData.filter(x => x.word !== v.word)).slice(0, 3).map(x => x.word);
+        questions.push({
+            type: '反向配對', emoji: '🔍',
+            question: '哪個詞語的意思是「' + v.definition + '」？',
+            options: shuffle([v.word, ...wrongWords]),
+            answer: v.word
+        });
+    });
+
+    // Type 3: 原創例句填空 (5 questions)
+    shuffle([...vocabData]).slice(0, 5).forEach(v => {
+        const wrongWords = shuffle(vocabData.filter(x => x.word !== v.word)).slice(0, 3).map(x => x.word);
+        // Pick a random challenge sentence
+        const sent = v.challengeSentences[Math.floor(Math.random() * v.challengeSentences.length)];
+        const sentence = sent.replace('___', '______');
+        questions.push({
+            type: '句子填空', emoji: '📝',
+            question: sentence,
+            options: shuffle([v.word, ...wrongWords]),
+            answer: v.word
+        });
+    });
+
+    return shuffle(questions).slice(0, 15);
+}
+
+function loadChallengeQuestion() {
+    const area = document.getElementById('challenge-area');
+    area.innerHTML = '';
+    if (challengeState.current >= challengeState.questions.length) {
+        clearInterval(challengeState.timer);
+        showResult(4, challengeState.score, 15);
+        return;
+    }
+    const q = challengeState.questions[challengeState.current];
+    challengeState.timeLeft = 15;
+
+    const card = document.createElement('div');
+    card.className = 'challenge-card';
+
+    const timerDiv = document.createElement('div');
+    timerDiv.className = 'challenge-timer';
+    timerDiv.id = 'challenge-timer';
+    timerDiv.textContent = '15';
+    card.appendChild(timerDiv);
+
+    const badge = document.createElement('div');
+    badge.className = 'challenge-question-type';
+    badge.textContent = q.emoji + ' ' + q.type;
+    card.appendChild(badge);
+
+    const qDiv = document.createElement('div');
+    qDiv.className = 'challenge-question';
+    qDiv.textContent = q.question;
+    card.appendChild(qDiv);
+
+    const optDiv = document.createElement('div');
+    optDiv.className = 'challenge-options';
+    q.options.forEach(opt => {
+        const btn = document.createElement('button');
+        btn.className = 'challenge-option';
+        btn.textContent = opt;
+        btn.onclick = () => checkChallengeAnswer(btn, opt, q, card);
+        optDiv.appendChild(btn);
+    });
+    card.appendChild(optDiv);
+    area.appendChild(card);
+
+    clearInterval(challengeState.timer);
+    challengeState.timer = setInterval(() => {
+        challengeState.timeLeft--;
+        const timerEl = document.getElementById('challenge-timer');
+        if (timerEl) {
+            timerEl.textContent = challengeState.timeLeft;
+            if (challengeState.timeLeft <= 5) timerEl.classList.add('warning');
+        }
+        if (challengeState.timeLeft <= 0) {
+            clearInterval(challengeState.timer);
+            timeUpChallenge(q, card);
+        }
+    }, 1000);
+    updateChallengeUI();
+}
+
+function checkChallengeAnswer(btn, chosen, q, card) {
+    clearInterval(challengeState.timer);
+    const allBtns = card.querySelectorAll('.challenge-option');
+    allBtns.forEach(b => { b.onclick = null; b.classList.add('chosen'); });
+
+    if (chosen === q.answer) {
+        btn.classList.add('correct-choice');
+        const bonus = Math.max(1, Math.ceil(challengeState.timeLeft / 3));
+        challengeState.score += bonus;
+        const fb = document.createElement('div');
+        fb.style.cssText = 'margin-top:15px; font-size:1.2em; font-weight:700; color:#00B894;';
+        fb.textContent = '✅ 正確！+' + bonus + ' 分';
+        card.appendChild(fb);
+    } else {
+        btn.classList.add('wrong-choice');
+        allBtns.forEach(b => { if (b.textContent === q.answer) b.classList.add('correct-choice'); });
+        const fb = document.createElement('div');
+        fb.style.cssText = 'margin-top:15px; font-size:1.1em; font-weight:600; color:#E17055;';
+        fb.textContent = '❌ 正確答案是「' + q.answer + '」';
+        card.appendChild(fb);
+    }
+    setTimeout(() => { challengeState.current++; loadChallengeQuestion(); }, 1500);
+    updateChallengeUI();
+}
+
+function timeUpChallenge(q, card) {
+    const allBtns = card.querySelectorAll('.challenge-option');
+    allBtns.forEach(b => { b.onclick = null; if (b.textContent === q.answer) b.classList.add('correct-choice'); });
+    const fb = document.createElement('div');
+    fb.style.cssText = 'margin-top:15px; font-size:1.2em; font-weight:700; color:#E17055;';
+    fb.textContent = '⏰ 時間到！正確答案是「' + q.answer + '」';
+    card.appendChild(fb);
+    setTimeout(() => { challengeState.current++; loadChallengeQuestion(); }, 1800);
+}
+
+function updateChallengeUI() {
+    document.getElementById('challenge-score').textContent = '✅ ' + challengeState.score + ' 分';
+    document.getElementById('challenge-progress-text').textContent = '第 ' + Math.min(challengeState.current + 1, 15) + ' 題，共 15 題';
+    document.getElementById('challenge-progress').style.width = Math.round((challengeState.current / 15) * 100) + '%';
+}
+
+// =====================================================
+// RESULT SCREEN
+// =====================================================
+function showResult(gameNum, score, total) {
+    const container = document.getElementById('game' + gameNum);
+    const areaId = { 1: 'match-area', 2: 'fill-area', 3: 'puzzle-area', 4: 'challenge-area' };
+    const area = document.getElementById(areaId[gameNum]);
+
+    let pct;
+    if (gameNum === 4) {
+        const maxScore = total * 5;
+        pct = Math.round((score / maxScore) * 100);
+    } else {
+        pct = Math.round((score / total) * 100);
+    }
+
+    let stars, message, emoji;
+    if (pct >= 90) { stars = '⭐⭐⭐'; message = '太棒了！你是詞語大師！🎉'; emoji = '🏆'; }
+    else if (pct >= 70) { stars = '⭐⭐'; message = '做得好！繼續努力加油！💪'; emoji = '🥈'; }
+    else if (pct >= 50) { stars = '⭐'; message = '不錯喔！再溫習一下會更好！📖'; emoji = '🥉'; }
+    else { stars = '💫'; message = '沒關係！多練習幾次就會進步！🌟'; emoji = '💪'; }
+
+    let displayScore;
+    if (gameNum === 4) {
+        displayScore = score + ' 分';
+    } else {
+        displayScore = score + ' / ' + total;
+    }
+
+    // Record best score
+    recordScore(gameNum, score);
+
+    if (area) {
+        area.innerHTML =
+            '<div class="result-screen">' +
+            '<div class="trophy">' + emoji + '</div>' +
+            '<h2>遊戲完成！</h2>' +
+            '<div class="final-score">' + displayScore + '</div>' +
+            '<div class="stars">' + stars + '</div>' +
+            '<div class="message">' + message + '</div>' +
+            '<button class="restart-btn" onclick="startGame(' + gameNum + ')">🔄 再玩一次</button>' +
+            '<button class="restart-btn home-btn" onclick="goHome()">🏠 返回選單</button>' +
+            '</div>';
+        if (pct >= 70) launchConfetti();
+    }
+}
+
+function launchConfetti() {
+    const colors = ['#6C5CE7', '#00B894', '#FDCB6E', '#E17055', '#74B9FF', '#A29BFE', '#55EFC4', '#FAB1A0'];
+    for (let i = 0; i < 60; i++) {
+        const piece = document.createElement('div');
+        piece.className = 'confetti-piece';
+        piece.style.left = Math.random() * 100 + 'vw';
+        piece.style.background = colors[Math.floor(Math.random() * colors.length)];
+        piece.style.width = (Math.random() * 8 + 5) + 'px';
+        piece.style.height = (Math.random() * 8 + 5) + 'px';
+        piece.style.animation = 'confettiFall ' + (Math.random() * 2 + 2) + 's ease forwards';
+        piece.style.animationDelay = Math.random() * 1 + 's';
+        document.body.appendChild(piece);
+        setTimeout(() => piece.remove(), 4000);
+    }
+}
+
+// Init dashboard on load
+updateDashboard();
+</script>
+</body>
+</html>
